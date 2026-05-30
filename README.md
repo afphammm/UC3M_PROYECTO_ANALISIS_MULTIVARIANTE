@@ -1,126 +1,48 @@
-# Análisis Multivariante del Gasto de los Hogares — EPF 2024 (INE)
+# Análisis Multivariante del Consumo de los Hogares Españoles (EPF 2024)
 
-> Proyecto académico · Grado en Estadística y Empresa · UC3M  
-> Herramientas: **R**, **RStudio** | Fuente de datos: **Encuesta de Presupuestos Familiares 2024 — INE**
+## 📌 Descripción del Proyecto
+Este repositorio contiene un análisis estadístico multivariante integral basado en los microdatos de la **Encuesta de Presupuestos Familiares (EPF) 2024** del Instituto Nacional de Estadística (INE). El proyecto aborda desde el preprocesamiento técnico de datos económicos hasta la creación de perfiles socioeconómicos complejos utilizando técnicas avanzadas de reducción de dimensionalidad y segmentación.
 
----
+## 📊 Conjunto de Datos
+Se ha trabajado con una muestra de **1000 hogares**, utilizando la clasificación oficial COICOP 2018 para las partidas de gasto. El dataset integra variables de naturaleza mixta:
+* **6 Cuantitativas (Gasto en miles de €):** Comida, Vivienda, Sanidad, Ocio, Restaurantes/Hoteles y Gasto Total. 
+* **2 Binarias:** Condición de asalariado y Otros ingresos.
+* **3 Categóricas:** Nivel de estudios del sustentador, Tamaño del municipio y Tamaño del hogar.
 
-## Descripción
-
-Este proyecto aplica técnicas estadísticas multivariantes sobre los microdatos públicos de la **Encuesta de Presupuestos Familiares (EPF) 2024** del Instituto Nacional de Estadística (INE) para identificar patrones de consumo en los hogares españoles y segmentar perfiles de gasto con potencial aplicación en decisiones de negocio.
-
----
-
-## Objetivos
-
-- Explorar la estructura del gasto en hogares españoles a partir de datos reales del INE
-- Detectar grupos de gasto significativamente distintos mediante análisis estadístico riguroso
-- Reducir la dimensionalidad del problema para visualizar patrones latentes
-- Segmentar los hogares en perfiles de consumo accionables
+## 🛠️ Tecnologías y Herramientas
+* **Lenguaje:** R / RStudio.
+* **Técnicas Estadísticas:** T² de Hotelling, MANOVA (Lambda de Wilks), PCA, MDS (Distancia G-Gower) y Clasificación Jerárquica.
+* **Librerías principales:** `GGally`, `corrplot`, `cluster`, `ggplot2` y funciones de álgebra lineal para descomposición espectral.
 
 ---
 
-## Estructura del proyecto
+## 🚀 Metodología y Fases del Análisis
 
-```
-epf-analisis-multivariante/
-│
-├── data/
-│   └── raw/             # Microdatos originales del INE (no incluidos por tamaño)
-│
-├── R/
-│   ├── 01_limpieza.R    # Gestión y preprocesado de microdatos
-│   ├── 02_eda.R         # Análisis exploratorio y descriptiva
-│   ├── 03_hipotesis.R   # Tests de hipótesis multivariantes (MANOVA, Hotelling)
-│   ├── 04_pca_mds.R     # Reducción de dimensionalidad (PCA y MDS)
-│   └── 05_clustering.R  # Segmentación de hogares (k-means y jerárquico)
-│
-├── outputs/
-│   ├── plots/           # Visualizaciones generadas
-│   └── tablas/          # Tablas de resultados exportadas
-│
-└── README.md
-```
+### 1. Preprocesamiento y Contrastes de Hipótesis
+* **Transformación Logarítmica:** Para corregir la asimetría positiva y la heterocedasticidad propias de los datos de gasto, se aplicó la transformación $log(x+1)$, permitiendo trabajar bajo supuestos de normalidad multivariante.
+* **Validación Estadística:** Mediante los tests de **T² de Hotelling** y **Lambda de Wilks**, se confirmó que la estructura de gasto no es uniforme, sino que varía significativamente según la situación laboral y el nivel educativo ($p < 0.001$).
 
----
+### 2. Análisis de Componentes Principales (PCA)
+Se redujo la dimensionalidad de las variables de gasto, identificando dos dimensiones que explican el **64.76% de la varianza**:
+* **Dimensión de Volumen (CP1):** Representa la capacidad de gasto total o nivel de riqueza del hogar.
+* **Dimensión de Estilo de Vida (CP2):** Contrapone el gasto en necesidades básicas (Vivienda/Alimentación) frente al gasto discrecional (Ocio/Hostelería).
 
-## Metodología
+### 3. Escalamiento Multidimensional (MDS) y Datos Mixtos
+Dada la presencia de variables cualitativas y cuantitativas, se empleó la **métrica G-Gower**. El análisis MDS permitió proyectar la proximidad entre hogares en un espacio bidimensional, revelando que el factor sociolaboral (ser asalariado o no) es el principal eje de diferenciación en la muestra.
 
-### 1. Gestión de microdatos
-Carga, limpieza y estructuración de los ficheros de microdatos del INE. Tratamiento de valores ausentes, codificación de variables y construcción del dataset analítico final.
-
-### 2. Análisis Exploratorio (EDA)
-Estadística descriptiva completa por grupos de gasto (medias, desviaciones, distribuciones). Visualización de distribuciones y correlaciones entre categorías de consumo.
-
-### 3. Tests de hipótesis multivariantes
-Validación estadística de diferencias significativas entre grupos mediante tests multivariantes (MANOVA, test de Hotelling). Comprobación de supuestos (normalidad, homocedasticidad).
-
-### 4. Reducción de dimensionalidad
-- **PCA** (Análisis de Componentes Principales): identificación de las dimensiones que explican la mayor varianza en el gasto de los hogares.
-- **MDS** (Escalado Multidimensional): representación de las similitudes entre hogares en un espacio de baja dimensión.
-
-### 5. Segmentación de consumidores
-- **k-means clustering**: partición óptima de hogares con selección del número de clusters mediante criterio del codo y silueta.
-- **Clustering jerárquico**: dendrograma para validar la estructura de grupos encontrada.
-- Perfilado de cada segmento con interpretación orientada a decisiones de negocio.
+### 4. Segmentación y Perfiles Socioeconómicos
+Mediante clasificación jerárquica, se identificaron **4 arquetipos de consumo** en España:
+1. **Consumo Discrecional (Clase Media-Alta):** Perfiles urbanos con alta inversión en ocio y servicios.
+2. **Perfil de Vulnerabilidad:** Hogares con gasto bloqueado en necesidades de supervivencia y baja elasticidad.
+3. **Estabilidad Familiar:** Hogares tradicionales de tamaño medio con consumo equilibrado.
+4. **"Generación Inquilina":** Jóvenes altamente cualificados con alto gasto en servicios urbanos pero dificultad de ahorro debido a costes residenciales.
 
 ---
 
-## Resultados principales
+## 💡 Conclusiones de Negocio
+El análisis revela que el consumo en España está fracturado estructuralmente por el ciclo de vida familiar y el nivel educativo. Se observa que el gasto en hostelería y cultura actúa como un fuerte indicador de estatus, mientras que el coste de la vivienda condiciona el resto de las decisiones financieras, especialmente en los perfiles más jóvenes y cualificados.
 
-- Se identificaron **X clusters** con perfiles de consumo claramente diferenciados (alta/media/baja intensidad de gasto en ocio, alimentación y vivienda).
-- Las primeras **2 componentes principales** explican aproximadamente el **XX% de la varianza total**.
-- Se encontraron diferencias estadísticamente significativas (p < 0.05) entre grupos en las principales categorías de gasto.
-
-> *Nota: los resultados exactos están disponibles en la carpeta `outputs/`.*
-
----
-
-## Cómo reproducir el análisis
-
-### Requisitos
-
-```r
-# Instalar paquetes necesarios
-install.packages(c(
-  "tidyverse",   # manipulación y visualización de datos
-  "FactoMineR",  # PCA y MDS
-  "factoextra",  # visualización de análisis factorial
-  "cluster",     # algoritmos de clustering
-  "ggplot2",     # gráficos
-  "corrplot"     # matrices de correlación
-))
-```
-
-### Datos
-
-Los microdatos de la EPF 2024 están disponibles de forma pública en el sitio web del INE:  
-[https://www.ine.es/dyngs/INEbase/es/operacion.htm?c=Estadistica_C&cid=1254736176806](https://www.ine.es/dyngs/INEbase/es/operacion.htm?c=Estadistica_C&cid=1254736176806)
-
-Descarga los ficheros y colócalos en `data/raw/` antes de ejecutar los scripts.
-
-### Ejecución
-
-Ejecuta los scripts en orden numérico desde RStudio o desde la consola de R:
-
-```r
-source("R/01_limpieza.R")
-source("R/02_eda.R")
-source("R/03_hipotesis.R")
-source("R/04_pca_mds.R")
-source("R/05_clustering.R")
-```
-
----
-
-## Autor
-
-**An Fu Pham He**  
-Estudiante de Estadística y Empresa · Universidad Carlos III de Madrid  
-[LinkedIn](https://www.linkedin.com/in/an-fu-pham-he-4335732b8/) · anfuph07@gmail.com
-
----
-
-## Licencia
-
-Proyecto académico con fines educativos. Los microdatos utilizados son propiedad del INE y están sujetos a su política de uso.
+## 📂 Estructura del Repositorio
+* `codigo_analisis/`: Script dividido en 3 partes con la limpieza, contrastes y algoritmos de reducción.
+* `graficos/`: Carpetas de gráficos resultantes del análisis realizado.
+* `memoria_tecnica/`: Documentación detallada de los resultados y la teoría aplicada. Estructurado en 3 partes.
